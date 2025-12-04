@@ -249,6 +249,7 @@ MonoBehaviour:
   _soundDatas:
   - _bgmSource: {fileID: 712221792}
     _bgmClipA: {fileID: 8300000, guid: 3fa05dd8adef1c84085b3c4f815c5079, type: 3}
+    _volume: 6.29
 --- !u!4 &712221794
 Transform:
   m_ObjectHideFlags: 0

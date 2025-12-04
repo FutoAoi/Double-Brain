@@ -1,5 +1,3 @@
-using System;
-using NUnit.Framework;
 using UnityEngine;
 
 public class SoundManager : MonoBehaviour
@@ -13,7 +11,7 @@ public class SoundManager : MonoBehaviour
         [SerializeField] private AudioSource _bgmSource;
         [SerializeField] private AudioClip _bgmClipA;
 
-        [Range(0f, 1f)]
+        [UnityEngine.Range(0f, 10f)]
         [SerializeField] private float _volume = 1f;
 
         public AudioSource BgmSource => _bgmSource;
