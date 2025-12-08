@@ -1,45 +1,69 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SoundManager : MonoBehaviour
 {
-    public static SoundManager Instance { get; private set; }
-
+    // インスペクターで設定できるように、カスタムクラスをSerializableにする
     [System.Serializable]
-    class SoundData
+    public class SoundGroup
     {
-        [Header("BGM設定")]
-        [SerializeField] private AudioSource _bgmSource;
-        [SerializeField] private AudioClip _bgmClipA;
+        [Tooltip("このグループの音量を制御するUIスライダー")]
+        public Slider controlSlider;
 
-        [UnityEngine.Range(0f, 10f)]
-        [SerializeField] private float _volume = 1f;
-
-        public AudioSource BgmSource => _bgmSource;
-        public AudioClip BgmClipA => _bgmClipA;
-        public float Volume => _volume;
+        [Tooltip("このスライダーで音量を制御したいAudioSourceのリスト")]
+        public List<AudioSource> audioSources;
     }
-    [SerializeField] SoundData[] _soundDatas;
 
+    [Tooltip("管理したい音源グループ（BGM, SEなど）と対応するスライダーの設定リスト")]
+    public List<SoundGroup> soundGroups;
 
-    public void Awake()
+    void Start()
     {
-        if (Instance == null)
+        // 全てのSoundGroupの設定をチェック
+        foreach (var group in soundGroups)
         {
-            Instance = this;
+            // スライダーが設定されているか確認
+            if (group.controlSlider == null)
+            {
+                Debug.LogError("SoundGroupに割り当てられたスライダーがありません。インスペクターを確認してください。", this);
+                continue;
+            }
+
+            // 初期音量を設定し、スライダーのイベントリスナーを設定
+            float initialVolume = group.controlSlider.value;
+            SetGroupVolumes(group.audioSources, initialVolume);
+
+            // スライダーの値が変更されたときに、対応する音源の音量を変更する処理を登録
+            // このリスナーを登録することで、Update()で毎フレーム処理する必要がなくなります。
+            group.controlSlider.onValueChanged.AddListener(delegate { OnSliderValueChanged(group); });
         }
     }
 
-    public void Play(string soundname)
+    /// <summary>
+    /// スライダーの値が変更されたときに呼び出されるメソッド
+    /// </summary>
+    /// <param name="group">変更されたスライダーが所属するSoundGroup</param>
+    private void OnSliderValueChanged(SoundGroup group)
     {
-        Debug.Log("SoundManager: {soundname} を再生します。");
+        float newVolume = group.controlSlider.value;
+        SetGroupVolumes(group.audioSources, newVolume);
+    }
 
+    /// <summary>
+    /// 指定されたAudioSourceリストの全ての音量を一括で設定するメソッド
+    /// </summary>
+    /// <param name="sources">設定するAudioSourceのリスト</param>
+    /// <param name="volume">設定する音量（0.0fから1.0f）</param>
+    private void SetGroupVolumes(List<AudioSource> sources, float volume)
+    {
+        if (sources == null) return;
 
-        if (_soundDatas.Length > 0)
+        foreach (AudioSource source in sources)
         {
-            if (!_soundDatas[0].BgmSource.isPlaying)
+            if (source != null)
             {
-                _soundDatas[0].BgmSource.clip = _soundDatas[0].BgmClipA;
-                _soundDatas[0].BgmSource.Play();
+                source.volume = volume;
             }
         }
     }
