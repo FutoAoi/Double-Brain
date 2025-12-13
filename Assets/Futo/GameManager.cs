@@ -24,4 +24,5 @@ public class GameManager : MonoBehaviour
             character.CharacterUpdate();
         }
     }
+
 }
