@@ -13,9 +13,8 @@ public class KeyBoardPlayer : MonoBehaviour,ICharacter
     private Transform _tf;
     private float _x, _z;
     private float _currentY;
-    private Vector3 _direction;
-    private Quaternion _rotate;
-
+    Quaternion _targetRot;
+    Vector3 _moveVector;
 
     public void OnMove(InputAction.CallbackContext context)
     {
@@ -31,25 +30,39 @@ public class KeyBoardPlayer : MonoBehaviour,ICharacter
 
     public void CharacterUpdate()
     {
+        _moveVector = new Vector3(_moveInput.x, 0, _moveInput.y);
+    }
+
+    public void FixedUpdate()
+    {
         KeyBoardMove();
+        KeyboardRotate();
         KeyBoardAnimator();
     }
 
+
     void KeyBoardMove()
     {
-        _x = _moveInput.x * _playerMoveSpeed;
-        _z = _moveInput.y * _playerMoveSpeed;
-
         _currentY = _rb.linearVelocity.y;
-        _direction = new Vector3(_x, 0, _z);
 
-        if(_direction.magnitude > 0.01)
-        {
-            _rotate = Quaternion.LookRotation(_direction);
-            _tf.rotation = _rotate;
-        }
+        Vector3 _velocity = _moveVector * _playerMoveSpeed;
+        _velocity.y = _currentY;
 
-        _rb.linearVelocity = new Vector3(_x, _currentY, _z);
+        _rb.linearVelocity = _velocity;
+    }
+
+    void KeyboardRotate()
+    {
+        if (_moveInput.sqrMagnitude < 0.001f) return;
+        _targetRot = Quaternion.LookRotation(_moveVector);
+        float rotateSpeed = 360f;
+
+        Quaternion newRot = Quaternion.RotateTowards(
+            _rb.rotation,
+            _targetRot,
+            rotateSpeed * Time.fixedDeltaTime
+        );
+        _rb.MoveRotation(newRot);
     }
 
     void KeyBoardAnimator()
