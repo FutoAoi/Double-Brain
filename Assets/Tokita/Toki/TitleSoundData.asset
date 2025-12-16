@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: TitleSoundData
   m_EditorClassIdentifier: Assembly-CSharp::SoundDataBaseSo
   _soundMap:
-  - _BGMID: 0
+  - _BGMID: 1
     _isLoop: 0
-    _BGMVolume: 0
-    _clip: {fileID: 0}
+    _BGMVolume: 1
+    _clip: {fileID: 8300000, guid: 3fa05dd8adef1c84085b3c4f815c5079, type: 3}
   _sound: []
