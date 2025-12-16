@@ -5,6 +5,7 @@ public class MouseClickPlayer : MonoBehaviour, ICharacter
 {
     [SerializeField] private float _moveSpeed;
     [SerializeField] private string _walkablePosition;
+    [SerializeField] private LayerMask _obstacleLayer;
 
     private Vector3 _targetPosition;
     private Vector2 _mousePos;
@@ -55,34 +56,43 @@ public class MouseClickPlayer : MonoBehaviour, ICharacter
 
     private void MouseRotate()
     {
-        // 現在地とターゲット位置が同じ場合は回転しない
         Vector3 direction = _targetPosition - _rb.position;
 
-        // 水平方向だけを使う（上下の傾きは無視）
         direction.y = 0f;
 
-        // 方向の長さがほぼ 0 なら回転しない
         if (direction.sqrMagnitude < 0.0001f)
             return;
 
-        // 向きたい回転を作る
         Quaternion targetRot = Quaternion.LookRotation(direction);
 
-        // 今の回転から目標回転へゆっくり向ける（回転スピードは好きに調整）
-        float rotateSpeed = 360f; // 1秒で1回転分（好みで変更可）
+        float rotateSpeed = 360f;
 
         Quaternion newRot = Quaternion.RotateTowards(
-            _rb.rotation,       // 今の角度
-            targetRot,          // 目標角度
-            rotateSpeed * Time.fixedDeltaTime   // 1フレームの回転量
+            _rb.rotation,
+            targetRot,
+            rotateSpeed * Time.fixedDeltaTime
         );
 
-        // Rigidbody に物理的に回転させる
         _rb.MoveRotation(newRot);
     }
 
     private void MouseMove()
     {
+        Vector3 direction = _targetPosition - _rb.position;
+
+        direction.y = 0f;
+
+        float distance = direction.magnitude;
+
+        if (distance < 0.01f)
+            return;
+
+        Ray ray = new Ray(_rb.position + Vector3.up * 0.5f, direction.normalized);
+
+        if (Physics.Raycast(ray, distance, _obstacleLayer))
+        {
+            return;
+        }
         _rb.MovePosition(
             Vector3.MoveTowards(
                 _rb.position,
