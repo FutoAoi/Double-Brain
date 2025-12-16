@@ -92,13 +92,6 @@ public class AudioManager : MonoBehaviour
 
     // --- BGM再生関連 ---
 
-    // enumのID（BGMID）を受け取ってBGMを再生
-    // （enumを受け取るようにオーバーロードされたメソッド）
-    public void PlayBGM(BGMID id)
-    {
-        PlayBGM((int)id); // int型のIDを受け取るメソッドを呼び出し
-    }
-
     // int型のIDを受け取ってBGMを再生
     public void PlayBGM(int id)
     {

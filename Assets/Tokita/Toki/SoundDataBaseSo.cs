@@ -7,18 +7,18 @@ using System.Linq;
 public class SoundDataBaseSo : ScriptableObject
 {
     [SerializeField]
-    private List<BGMData> _soundMap = new List<BGMData>();
+    private List<BGMData> _bgmSound = new List<BGMData>();
 
     [SerializeField]
-    private List<SEData> _sound = new List<SEData>();
+    private List<SEData> _seSound = new List<SEData>();
 
     public BGMData GetBGMData(int id)
     {
-        return _soundMap.FirstOrDefault(x => x.ID == id);
+        return _bgmSound.FirstOrDefault(x => x.ID == id);
     }
     public SEData GetSEData(int id)
     {
-        return _sound.FirstOrDefault(x => x.SEID == id);
+        return _seSound.FirstOrDefault(x => x.SEID == id);
     }
 }
 
