@@ -1,7 +1,5 @@
-using UnityEngine;
-
 public interface ICharacter
 {
-    void CharacterSetup();
-    void CharacterUpdate();
+    public void CharacterSetup();
+    public void CharacterUpdate();
 }
