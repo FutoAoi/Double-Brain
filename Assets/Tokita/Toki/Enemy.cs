@@ -8,6 +8,8 @@ public class Enemy : MonoBehaviour,ICharacter
     private KeyBoardPlayer _keyBoardPlayer;
     private MouseClickPlayer _mouseClickPlayer;
 
+    private Rigidbody _rb;
+
     [Header("攻撃設定")]
     [SerializeField] private GameObject _projectilePrefab; // 弾のプレハブ
     [SerializeField] private float _attackRange = 10f; // 攻撃が届く範囲
@@ -19,6 +21,8 @@ public class Enemy : MonoBehaviour,ICharacter
     private void Awake()
     {
         CharacterSetup();
+
+        _rb = GetComponent<Rigidbody>();
     }
 
     public void CharacterSetup()
@@ -45,7 +49,7 @@ public class Enemy : MonoBehaviour,ICharacter
                 _attackTimer -= Time.deltaTime;
                 if (_attackTimer <= 0)
                 {
-                    Shoot(); // 遠距離攻撃実行
+                    Attack(); // 遠距離攻撃実行
                     // タイマーをリセット
                     _attackTimer = _attackSpaceRange; 
                 }
@@ -53,7 +57,7 @@ public class Enemy : MonoBehaviour,ICharacter
         }
     }
 
-    private void Shoot()
+    private void Attack()
     {
         Debug.Log("プレイヤーに向かって遠距離攻撃！");
 
@@ -62,7 +66,7 @@ public class Enemy : MonoBehaviour,ICharacter
             // プレイヤーへの方向を計算
             Vector3 direction = (_keyBoardPlayer.transform.position - transform.position).normalized;
 
-
+            _rb.linearVelocity = new Vector3(direction.x, 0, direction.z);
         }
     }
 
