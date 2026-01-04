@@ -4,24 +4,25 @@ using UnityEngine.SceneManagement;
 
 public class SceneChange : MonoBehaviour
 {
-    [SerializeField] string nextSceneName;
-    [SerializeField] string backSceneName;
+    //シーン移行時のボタンは自由に設定可能
+    [SerializeField] string _nextSceneName;
+    [SerializeField] string _backSceneName;
 
     //次シーン移行
     public void Next()
     {
-        if (!string.IsNullOrEmpty(nextSceneName))
+        if (!string.IsNullOrEmpty(_nextSceneName))
         {
-            SceneManager.LoadScene(nextSceneName);
+            SceneManager.LoadScene(_nextSceneName);
         }
     }
 
     //前シーン移行
     public void Back()
     {
-        if (!string.IsNullOrEmpty(backSceneName))
+        if (!string.IsNullOrEmpty(_backSceneName))
         {
-            SceneManager.LoadScene(backSceneName);
+            SceneManager.LoadScene(_backSceneName);
         }
     }
 
