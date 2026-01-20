@@ -1,6 +1,13 @@
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+
+/*
+ * シーンネームを入れてシーン移行できるように
+ * UIのボタンで動く
+ * S、Q、Eキーでそれぞれシーン移行
+ */
 
 public class SceneChange : MonoBehaviour
 {
@@ -8,8 +15,28 @@ public class SceneChange : MonoBehaviour
     [SerializeField] string _nextSceneName;
     [SerializeField] string _backSceneName;
 
+    //特定キーが押されたら実行
+    void Update()
+    {
+        //S
+        if (Keyboard.current.sKey.wasPressedThisFrame)
+        {
+            NextStage();
+        }
+        //Q
+        else if (Keyboard.current.qKey.wasPressedThisFrame)
+        {
+            BackScene();
+        }
+        //E
+        else if (Keyboard.current.eKey.wasPressedThisFrame)
+        {
+            EndGame();
+        }
+    }
+
     //次シーン移行
-    public void Next()
+    public void NextStage()
     {
         if (!string.IsNullOrEmpty(_nextSceneName))
         {
@@ -18,7 +45,7 @@ public class SceneChange : MonoBehaviour
     }
 
     //前シーン移行
-    public void Back()
+    public void BackScene()
     {
         if (!string.IsNullOrEmpty(_backSceneName))
         {
@@ -26,8 +53,8 @@ public class SceneChange : MonoBehaviour
         }
     }
 
-    //ゲーム終了
-    public void End()
+    //ゲーム終了(強制終了)
+    public void EndGame()
     {
         Application.Quit();
 
