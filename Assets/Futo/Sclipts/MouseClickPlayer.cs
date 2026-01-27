@@ -13,7 +13,14 @@ public class MouseClickPlayer : MonoBehaviour, ICharacter, IPlayer
     [SerializeField] private LineRenderer _lineRenderer;
     [SerializeField] private int _linePointCount = 30;
     [SerializeField] private float _timeStep = 0.1f;
+    [SerializeField] private LayerMask _groundLayer;
+    [SerializeField] private LineRenderer _aimLineRenderer;
+    [SerializeField] private Texture2D _aimCursor;
 
+    [SerializeField] private GameObject _targetMarkerPrefab; // マーカーのPrefab
+    private GameObject _targetMarkerInstance;
+
+    private AudioManager _audioManager;
     private Vector3 _targetPosition;
     private Vector2 _mousePos;
     private Ray _ray;
@@ -21,6 +28,7 @@ public class MouseClickPlayer : MonoBehaviour, ICharacter, IPlayer
     private Rigidbody _rb;
     private Animator _playerAnimator;
     private Vector3 _previousPosition;
+    private bool _isAim = false;
 
     public GameObject HaveItem => _haveItem;
 
@@ -32,6 +40,7 @@ public class MouseClickPlayer : MonoBehaviour, ICharacter, IPlayer
         _targetPosition = transform.position;
         _targetPosition = transform.position;
         _previousPosition = transform.position;
+        _audioManager = AudioManager.Instance;
     }
 
     public void CharacterUpdate()
@@ -41,38 +50,81 @@ public class MouseClickPlayer : MonoBehaviour, ICharacter, IPlayer
 
     public void FixedUpdate()
     {
-        MouseMove();
+        if (!_isAim)
+        {
+            MouseMove();
+        }
         MouseRotate();
         MouseAnimator();
         DrawThrowPrediction();
+        
     }
 
     void MouseInput()
     {
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
+            if (_isAim)
+            {
+                ShootToMousePosition();
+                return;
+            }
+
             _mousePos = Mouse.current.position.ReadValue();
 
             _ray = Camera.main.ScreenPointToRay(_mousePos);
 
-            if (Physics.Raycast(_ray, out _hit))
+            if (Physics.Raycast(_ray, out _hit,float.MaxValue,_groundLayer))
             {
                 if (_hit.collider.CompareTag(_walkablePosition))
                 {
                     _targetPosition = _hit.point;
+
+                    SetTargetMarker(_hit.point);
                 }
             }
         }
 
         if(Mouse.current.rightButton.wasPressedThisFrame)
         {
-            UseItem();
+            if (_haveItem != null)
+            {
+                UseItem();
+            }
+            else
+            {
+                AimModeChange();
+            }
         }
     }
 
     private void MouseRotate()
     {
-        Vector3 direction = _targetPosition - _rb.position;
+        Vector3 direction;
+
+        if (_isAim)
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
+
+            if (Physics.Raycast(ray, out _hit, float.MaxValue))
+            {
+                direction = _hit.point - _rb.position;
+
+                _aimLineRenderer.enabled = true;
+                _aimLineRenderer.SetPosition(0, _rb.position + (Vector3.up * 3f));
+                _aimLineRenderer.SetPosition(1, _hit.point);
+            }
+            else
+            {
+                _aimLineRenderer.enabled = false;
+                return;
+            }
+        }
+        else
+        {
+            _aimLineRenderer.enabled = false;
+            direction = _targetPosition - _rb.position;
+        }
 
         direction.y = 0f;
 
@@ -81,15 +133,31 @@ public class MouseClickPlayer : MonoBehaviour, ICharacter, IPlayer
 
         Quaternion targetRot = Quaternion.LookRotation(direction);
 
-        float rotateSpeed = 360f;
-
-        Quaternion newRot = Quaternion.RotateTowards(
-            _rb.rotation,
-            targetRot,
-            rotateSpeed * Time.fixedDeltaTime
+        _rb.MoveRotation(
+            Quaternion.RotateTowards(
+                _rb.rotation,
+                targetRot,
+                360f * Time.fixedDeltaTime
+            )
         );
+    }
 
-        _rb.MoveRotation(newRot);
+    void SetTargetMarker(Vector3 position)
+    {
+        // まだマーカーが無ければ生成
+        if (_targetMarkerInstance == null)
+        {
+            _targetMarkerInstance = Instantiate(
+                _targetMarkerPrefab, // Prefab
+                position,            // 位置
+                Quaternion.identity  // 回転なし
+            );
+        }
+        else
+        {
+            // 既にあれば位置だけ移動
+            _targetMarkerInstance.transform.position = position;
+        }
     }
 
     private void MouseMove()
@@ -147,6 +215,20 @@ public class MouseClickPlayer : MonoBehaviour, ICharacter, IPlayer
         _haveItem = null;
     }
 
+    private void AimModeChange()
+    {
+        _isAim = !_isAim;
+        if (_isAim)
+        {
+            Cursor.SetCursor(_aimCursor, new Vector2(10,10), CursorMode.Auto);
+        }
+        else
+        {
+            Cursor.SetCursor(null,Vector2.zero,CursorMode.Auto);
+        }
+        _playerAnimator.SetBool("Aim", _isAim);
+    }
+
     void DrawThrowPrediction()
     {
         // アイテムを持っていないなら表示しない
@@ -179,5 +261,9 @@ public class MouseClickPlayer : MonoBehaviour, ICharacter, IPlayer
 
             _lineRenderer.SetPosition(i, position);
         }
+    }
+    private void ShootToMousePosition()
+    {
+        _audioManager.PlaySe("Shoot");
     }
 }
