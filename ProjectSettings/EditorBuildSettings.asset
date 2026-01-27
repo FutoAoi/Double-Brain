@@ -6,17 +6,17 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    path: Assets/Futo/Title.unity
+    guid: de49c525d2dcad042bb81fcdaec27c03
   - enabled: 1
-    path: Assets/Kotarou/KT_Scene0.unity
-    guid: b7ccc276a3e258f47ad41634b23dcd79
+    path: Assets/Futo/FutoScene.unity
+    guid: a7a089bd5e032654d9afb1e84a2a5d08
   - enabled: 1
-    path: Assets/Kotarou/KT_Scene1.unity
-    guid: a0d4b7fd74f106942b4df96d2df9be96
+    path: Assets/Futo/GameOver.unity
+    guid: 48c0e08334126474a8a352e6ca89431e
   - enabled: 1
-    path: Assets/Kotarou/KT_Scene2.unity
-    guid: d46c3950870abef4d8a6933f7a55b595
+    path: Assets/Futo/GameClear.unity
+    guid: 73ab548b52ba0964f9514cb5462143b3
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 3d5915a4d0a93b047aee5fdcaa746d05, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 3195579c1f8b03640b43021fc9b42269, type: 3}
