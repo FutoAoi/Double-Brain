@@ -8,6 +8,15 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Kotarou/KT_Scene0.unity
+    guid: b7ccc276a3e258f47ad41634b23dcd79
+  - enabled: 1
+    path: Assets/Kotarou/KT_Scene1.unity
+    guid: a0d4b7fd74f106942b4df96d2df9be96
+  - enabled: 1
+    path: Assets/Kotarou/KT_Scene2.unity
+    guid: d46c3950870abef4d8a6933f7a55b595
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 3d5915a4d0a93b047aee5fdcaa746d05, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 3195579c1f8b03640b43021fc9b42269, type: 3}
