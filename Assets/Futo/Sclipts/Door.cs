@@ -9,11 +9,13 @@ public class Door : MonoBehaviour
 
     private Vector3 _closePosition;
     private Transform _transform;
+    private AudioManager _audioManager;
 
     void Start()
     {
         _closePosition = transform.position;
         _transform = GetComponent<Transform>();
+        _audioManager = AudioManager.Instance;
         foreach (var gimmick in _flagGimmicks)
         {
             gimmick.OnActiveChanged += CheckActiveGimmick;
@@ -23,6 +25,8 @@ public class Door : MonoBehaviour
     public void Open()
     {
         _transform.position = _openTransform.position;
+        _audioManager.PlaySe("Door");
+
     }
 
     public void Close()
