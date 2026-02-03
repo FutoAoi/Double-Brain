@@ -58,7 +58,7 @@ public class Enemy : MonoBehaviour, ICharacter
     private void OnCollisionEnter(Collision collision)
     {
         // 接触相手のタグを確認 (Player1, Player2両方に対応)
-        if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("Player2"))
+        if (collision.gameObject.CompareTag("Player"))
         {
             Debug.Log($"{collision.gameObject.name} はワンパンでやられた！");
 
