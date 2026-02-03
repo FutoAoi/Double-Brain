@@ -5,6 +5,13 @@ public class Enemy : MonoBehaviour, ICharacter
     public Transform[] _Players;     // プレイヤーの配列
     [SerializeField] private float _speed = 5f;  // 移動速度
     [SerializeField] private float searchRange = 10f; // 索敵範囲（この距離に入ったら追いかける）
+    [SerializeField] private Animator _anim;
+    private bool isWalk;
+
+    void Start()
+    {
+        _anim = GetComponentInChildren<Animator>();
+    }
 
     void Update()
     {
@@ -17,11 +24,19 @@ public class Enemy : MonoBehaviour, ICharacter
 
         // 追いかける対象がいない場合は何もしない
         if (target == null) return;
+        {
+            _anim.SetBool("Walk", false);
+        }
+        
 
         // 現在位置とターゲットの距離計算
         float distance = Vector3.Distance(transform.position, target.position);
 
         if (distance > searchRange) return;
+        {
+            _anim.SetBool("Walk", true);
+        }
+        
 
         // 対象に向かって移動
         Vector3 direction = (target.position - transform.position).normalized;
@@ -61,6 +76,8 @@ public class Enemy : MonoBehaviour, ICharacter
         if (collision.gameObject.CompareTag("Player"))
         {
             Debug.Log($"{collision.gameObject.name} はワンパンでやられた！");
+
+            
 
             // 相手を破壊
             Destroy(collision.gameObject);
