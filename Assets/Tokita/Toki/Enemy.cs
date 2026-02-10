@@ -1,76 +1,112 @@
 using UnityEngine;
 
-
-
-public class Enemy : MonoBehaviour,ICharacter
+public class Enemy : MonoBehaviour, ICharacter
 {
-    public Transform[] player;       // プレイヤーのTransform
-    public float speed = 5f;       // 移動速度
-    public float stopDistance = 1f; // 接触判定距離
+    public Transform[] _Players;
 
-    
+    [SerializeField] private float _speed = 5f;
+    [SerializeField] private float searchRange = 10f;
+    [SerializeField] private float attackRange = 2f;
+
+    Animator anim;
+    bool Attack = false;
+    bool isDie = false;
+
+    public GameObject _MouseClickPlayer;
+    public GameObject _KeyboardPlayer;
 
 
-    private void Awake()
-    {
-        CharacterSetup();
-
-        
-    }
-
-    public void CharacterSetup()
-    {
-        
-
-    }
-
-    public void CharacterUpdate()
-    {
-        
-    }
-
-    
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        anim = GetComponentInChildren<Animator>();
+
+        //MouseClickPlayer script = _MouseClickPlayer.GetComponent<MouseClickPlayer>();
+
+        //script.Hit();
+
+        //KeyBoardPlayer Script = _KeyboardPlayer.GetComponent<KeyBoardPlayer>();
+
+        //Script.Hit();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if (player[0] == null) return;
+        if (isDie) return;
 
-        // プレイヤー1の方向へ移動
-        Vector3 direction1 = (player[0].position - transform.position).normalized;
-        transform.position += direction1 * speed * Time.deltaTime;
-
-        // プレイヤー1との距離が近ければ攻撃
-        if (Vector3.Distance(transform.position, player[0].position) <= stopDistance)
-        {
-            Destroy(player[0]);
-            OnePunch();
-        }
-
-        if (player[1] == null) return;
-        // プレイヤー2の方向へ移動
-        Vector3 direction2 = (player[1].position - transform.position).normalized;
-        transform.position += direction2 * speed * Time.deltaTime;
-
-        // プレイヤー2との距離が近ければ攻撃
-        if (Vector3.Distance(transform.position, player[1].position) <= stopDistance)
-        {
-            Destroy (player[1]);
-            OnePunch();
-        }
-
+        MoveTowardsNearestPlayer();
     }
 
-    void OnePunch()
+    void MoveTowardsNearestPlayer()
     {
-        Debug.Log("プレイヤーはワンパンでやられた！");
-        // ここでゲームオーバー処理を呼び出す
-        // 例: GameManager.Instance.GameOver();
+        Transform target = GetNearestPlayer();
+        if (target == null)
+        {
+            anim.SetFloat("Speed", 0);
+            return;
+        }
+
+        float distance = Vector3.Distance(transform.position, target.position);
+
+        // 攻撃
+        if (distance <= attackRange)
+        {
+            Attack = true;
+            anim.SetBool("Attack", true);
+            anim.SetFloat("Speed", 0);
+            return; // ★移動しない
+        }
+
+        // 追跡
+        Attack = false;
+        anim.SetBool("Attack", false);
+
+        if (distance <= searchRange)
+        {
+            anim.SetFloat("Speed", 1);
+
+            Vector3 dir = (target.position - transform.position).normalized;
+            transform.position += dir * _speed * Time.deltaTime;
+            transform.forward = dir;
+        }
+        else
+        {
+            anim.SetFloat("Speed", 0);
+        }
     }
+
+    Transform GetNearestPlayer()
+    {
+        Transform nearest = null;
+        float min = float.MaxValue;
+
+        foreach (var p in _Players)
+        {
+            if (!p) continue;
+
+            float d = Vector3.Distance(transform.position, p.position);
+            if (d < min)
+            {
+                min = d;
+                nearest = p;
+            }
+        }
+        return nearest;
+    }
+
+    // アニメイベントから呼ぶ
+    public void EndAttack()
+    {
+        Attack = false;
+        anim.SetBool("Attack", false);
+    }
+
+    public void Die()
+    {
+        isDie = true;
+        anim.SetBool("isDie", true);
+        Destroy(this.gameObject);
+    }
+
+    public void CharacterSetup() { }
+    public void CharacterUpdate() { }
 }
