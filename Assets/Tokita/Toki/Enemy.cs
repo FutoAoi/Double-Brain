@@ -14,22 +14,23 @@ public class Enemy : MonoBehaviour, ICharacter
 
     public GameObject _MouseClickPlayer;
     public GameObject _KeyboardPlayer;
-
+    public GameObject _EnemyPrefab;
 
     void Start()
     {
-        anim = GetComponentInChildren<Animator>();
-
-        //MouseClickPlayer script = _MouseClickPlayer.GetComponent<MouseClickPlayer>();
-
-        //script.Hit();
-
-        //KeyBoardPlayer Script = _KeyboardPlayer.GetComponent<KeyBoardPlayer>();
-
-        //Script.Hit();
+        
     }
 
     void Update()
+    {
+        
+    }
+
+    public void CharacterSetup()
+    {
+        anim = GetComponentInChildren<Animator>();
+    }
+    public void CharacterUpdate()
     {
         if (isDie) return;
 
@@ -54,12 +55,17 @@ public class Enemy : MonoBehaviour, ICharacter
             anim.SetBool("Attack", true);
             anim.SetFloat("Speed", 0);
             return; // Åöà⁄ìÆÇµÇ»Ç¢
+
+            //MouseClickPlayer script = _MouseClickPlayer.GetComponent<MouseClickPlayer>();
+
+            //script.Hit();
+
+            //KeyBoardPlayer Script = _KeyboardPlayer.GetComponent<KeyBoardPlayer>();
+
+            //Script.Hit();
         }
 
         // í«ê’
-        Attack = false;
-        anim.SetBool("Attack", false);
-
         if (distance <= searchRange)
         {
             anim.SetFloat("Speed", 1);
@@ -102,11 +108,6 @@ public class Enemy : MonoBehaviour, ICharacter
 
     public void Die()
     {
-        isDie = true;
-        anim.SetBool("isDie", true);
         Destroy(this.gameObject);
     }
-
-    public void CharacterSetup() { }
-    public void CharacterUpdate() { }
 }
