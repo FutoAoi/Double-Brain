@@ -2,92 +2,109 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour, ICharacter
 {
-    public Transform[] _Players;     // プレイヤーの配列
-    [SerializeField] private float _speed = 5f;  // 移動速度
-    [SerializeField] private float searchRange = 10f; // 索敵範囲（この距離に入ったら追いかける）
-    [SerializeField] private Animator _anim;
-    private bool isWalk;
+    public Transform[] _Players;
+
+    [SerializeField] private float _speed = 5f;
+    [SerializeField] private float searchRange = 10f;
+    [SerializeField] private float attackRange = 2f;
+
+    Animator anim;
+    bool Attack = false;
+    bool isDie = false;
+
+    public GameObject _MouseClickPlayer;
+    public GameObject _KeyboardPlayer;
+
 
     void Start()
     {
-        _anim = GetComponentInChildren<Animator>();
+        anim = GetComponentInChildren<Animator>();
+
+        //MouseClickPlayer script = _MouseClickPlayer.GetComponent<MouseClickPlayer>();
+
+        //script.Hit();
+
+        //KeyBoardPlayer Script = _KeyboardPlayer.GetComponent<KeyBoardPlayer>();
+
+        //Script.Hit();
     }
 
     void Update()
     {
+        if (isDie) return;
+
         MoveTowardsNearestPlayer();
     }
 
-    private void MoveTowardsNearestPlayer()
+    void MoveTowardsNearestPlayer()
     {
         Transform target = GetNearestPlayer();
-
-        // 追いかける対象がいない場合は何もしない
-        if (target == null) return;
+        if (target == null)
         {
-            _anim.SetBool("Walk", false);
+            anim.SetFloat("Speed", 0);
+            return;
         }
-        
 
-        // 現在位置とターゲットの距離計算
         float distance = Vector3.Distance(transform.position, target.position);
 
-        if (distance > searchRange) return;
+        // 攻撃
+        if (distance <= attackRange)
         {
-            _anim.SetBool("Walk", true);
+            Attack = true;
+            anim.SetBool("Attack", true);
+            anim.SetFloat("Speed", 0);
+            return; // ★移動しない
         }
-        
 
-        // 対象に向かって移動
-        Vector3 direction = (target.position - transform.position).normalized;
-        transform.position += direction * _speed * Time.deltaTime;
+        // 追跡
+        Attack = false;
+        anim.SetBool("Attack", false);
 
-        // オプション: 進行方向を向かせる
-        if (direction != Vector3.zero)
+        if (distance <= searchRange)
         {
-            transform.forward = direction;
+            anim.SetFloat("Speed", 1);
+
+            Vector3 dir = (target.position - transform.position).normalized;
+            transform.position += dir * _speed * Time.deltaTime;
+            transform.forward = dir;
+        }
+        else
+        {
+            anim.SetFloat("Speed", 0);
         }
     }
 
-    // 生きているプレイヤーの中で一番近い人を探す
-    private Transform GetNearestPlayer()
+    Transform GetNearestPlayer()
     {
         Transform nearest = null;
-        float minDistance = float.MaxValue;
+        float min = float.MaxValue;
 
         foreach (var p in _Players)
         {
-            if (p == null) continue; // 破壊済みの場合はスキップ
+            if (!p) continue;
 
-            float dist = Vector3.Distance(transform.position, p.position);
-            if (dist < minDistance)
+            float d = Vector3.Distance(transform.position, p.position);
+            if (d < min)
             {
-                minDistance = dist;
+                min = d;
                 nearest = p;
             }
         }
         return nearest;
     }
 
-    // 接触した瞬間の処理
-    private void OnCollisionEnter(Collision collision)
+    // アニメイベントから呼ぶ
+    public void EndAttack()
     {
-        // 接触相手のタグを確認 (Player1, Player2両方に対応)
-        if (collision.gameObject.CompareTag("Player"))
-        {
-            Debug.Log($"{collision.gameObject.name} はワンパンでやられた！");
-
-            
-
-            // 相手を破壊
-            Destroy(collision.gameObject);
-        }
+        Attack = false;
+        anim.SetBool("Attack", false);
     }
 
-    private void OnDrawGizmosSelected()
+    public void Die()
     {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, searchRange);
+        isDie = true;
+        anim.SetBool("isDie", true);
+        Destroy(this.gameObject);
     }
 
     public void CharacterSetup() { }
