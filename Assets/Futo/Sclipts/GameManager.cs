@@ -6,11 +6,8 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] List<ICharacter> _characterList = new List<ICharacter>();
 
-    private AudioManager _audioManager;
     private void Start()
     {
-        _audioManager = AudioManager.Instance;
-        _audioManager.PlayBGM("InGame");
         var characters = FindObjectsByType<MonoBehaviour>(
                          FindObjectsInactive.Include,
                          FindObjectsSortMode.None

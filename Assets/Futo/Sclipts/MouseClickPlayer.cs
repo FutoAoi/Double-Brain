@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -16,6 +17,8 @@ public class MouseClickPlayer : MonoBehaviour, ICharacter, IPlayer
     [SerializeField] private LayerMask _groundLayer;
     [SerializeField] private LineRenderer _aimLineRenderer;
     [SerializeField] private Texture2D _aimCursor;
+    [SerializeField] private GameObject _bulletPrefab; // 弾のPrefab
+    [SerializeField] private Transform _shootPoint;
 
     [SerializeField] private GameObject _targetMarkerPrefab; // マーカーのPrefab
     private GameObject _targetMarkerInstance;
@@ -29,6 +32,7 @@ public class MouseClickPlayer : MonoBehaviour, ICharacter, IPlayer
     private Animator _playerAnimator;
     private Vector3 _previousPosition;
     private bool _isAim = false;
+    private Vector3 _direction;
 
     public GameObject HaveItem => _haveItem;
 
@@ -100,19 +104,23 @@ public class MouseClickPlayer : MonoBehaviour, ICharacter, IPlayer
 
     private void MouseRotate()
     {
-        Vector3 direction;
 
         if (_isAim)
         {
             Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
+            _direction = _hit.point - _rb.position;
 
             if (Physics.Raycast(ray, out _hit, float.MaxValue))
             {
-                direction = _hit.point - _rb.position;
+                _aimLineRenderer.enabled = true;
+                Vector3 startPos = _rb.position + Vector3.up * 3f;
+                Vector3 endPos = _hit.point;
+
+                endPos.y = startPos.y;
 
                 _aimLineRenderer.enabled = true;
-                _aimLineRenderer.SetPosition(0, _rb.position + (Vector3.up * 3f));
-                _aimLineRenderer.SetPosition(1, _hit.point);
+                _aimLineRenderer.SetPosition(0, startPos);
+                _aimLineRenderer.SetPosition(1, endPos);
             }
             else
             {
@@ -123,15 +131,15 @@ public class MouseClickPlayer : MonoBehaviour, ICharacter, IPlayer
         else
         {
             _aimLineRenderer.enabled = false;
-            direction = _targetPosition - _rb.position;
+            _direction = _targetPosition - _rb.position;
         }
 
-        direction.y = 0f;
+        _direction.y = 0f;
 
-        if (direction.sqrMagnitude < 0.0001f)
-            return;
+        if (_direction.sqrMagnitude < 0.0001f)
+           return;
 
-        Quaternion targetRot = Quaternion.LookRotation(direction);
+        Quaternion targetRot = Quaternion.LookRotation(_direction);
 
         _rb.MoveRotation(
             Quaternion.RotateTowards(
@@ -231,7 +239,6 @@ public class MouseClickPlayer : MonoBehaviour, ICharacter, IPlayer
 
     void DrawThrowPrediction()
     {
-        // アイテムを持っていないなら表示しない
         if (_haveItem == null)
         {
             _lineRenderer.enabled = false;
@@ -240,20 +247,16 @@ public class MouseClickPlayer : MonoBehaviour, ICharacter, IPlayer
 
         _lineRenderer.enabled = true;
 
-        // 投げ始めの位置
         Vector3 startPos = _itemTransform.position;
 
-        // 投げる方向（前）
         Vector3 startVelocity = transform.forward * _throwPower;
 
-        // 点の数を設定
         _lineRenderer.positionCount = _linePointCount;
 
         for (int i = 0; i < _linePointCount; i++)
         {
             float time = i * _timeStep;
 
-            // 放物線の計算
             Vector3 position =
                 startPos +
                 startVelocity * time +
@@ -265,5 +268,28 @@ public class MouseClickPlayer : MonoBehaviour, ICharacter, IPlayer
     private void ShootToMousePosition()
     {
         _audioManager.PlaySe("Shoot");
+
+        Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
+
+        Vector3 shootDirection;
+
+        if (Physics.Raycast(ray, out RaycastHit hit, float.MaxValue))
+        {
+            shootDirection = hit.point - _shootPoint.position;
+
+            shootDirection.y = 0f;
+
+            shootDirection.Normalize();
+        }
+        else
+        {
+            shootDirection = transform.forward;
+        }
+
+        Instantiate(
+            _bulletPrefab,
+            _shootPoint.position,
+            Quaternion.LookRotation(shootDirection)
+        );
     }
 }

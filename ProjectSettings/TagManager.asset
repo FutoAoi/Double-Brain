@@ -7,6 +7,8 @@ TagManager:
   - Ground
   - Key
   - Enemy
+  - Bullet
+  - destroy
   layers:
   - Default
   - TransparentFX
@@ -17,7 +19,7 @@ TagManager:
   - Obstacle
   - Ground
   - gimic
-  - 
+  - Player
   - 
   - 
   - 

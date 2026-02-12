@@ -48,4 +48,28 @@ MonoBehaviour:
     _isLoop: 1
     _playOnAwake: 1
     _clip: {fileID: 8300000, guid: 6511bfbd45842004f99799166c675b2d, type: 3}
+    _volume: 0.22
+  - _key: GameOver
+    _type: 0
+    _isLoop: 1
+    _playOnAwake: 1
+    _clip: {fileID: 8300000, guid: 6511bfbd45842004f99799166c675b2d, type: 3}
     _volume: 0.05
+  - _key: GameClear
+    _type: 0
+    _isLoop: 1
+    _playOnAwake: 1
+    _clip: {fileID: 8300000, guid: cf53976d5bc430647a456963653609fa, type: 3}
+    _volume: 0.05
+  - _key: Rock
+    _type: 1
+    _isLoop: 0
+    _playOnAwake: 1
+    _clip: {fileID: 8300000, guid: 6030b90b6be2b4a458e5be4081df5b18, type: 3}
+    _volume: 0.32
+  - _key: Lever
+    _type: 1
+    _isLoop: 0
+    _playOnAwake: 1
+    _clip: {fileID: 8300000, guid: 8de2064a6d5a09e47b0d51055d9ebd8e, type: 3}
+    _volume: 0.32

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,6 +13,8 @@ public class KeyBoardPlayer : MonoBehaviour,ICharacter, IPlayer
     [SerializeField] private LineRenderer _lineRenderer;
     [SerializeField] private int _linePointCount = 30;
     [SerializeField] private float _timeStep = 0.1f;
+    [SerializeField] private Hammer _hammer;
+    [SerializeField] private float _hammerTime;
 
     public GameObject HaveItem => _haveItem;
 
@@ -35,6 +38,12 @@ public class KeyBoardPlayer : MonoBehaviour,ICharacter, IPlayer
         {
             UseItem();
         }
+    }
+
+    public void OnAttack(InputAction.CallbackContext context)
+    {
+        StartCoroutine(Hammer());
+        _playerAnimator.Play("Swing");
     }
 
     public void CharacterSetup()
@@ -141,5 +150,16 @@ public class KeyBoardPlayer : MonoBehaviour,ICharacter, IPlayer
 
             _lineRenderer.SetPosition(i, position);
         }
+    }
+
+    public IEnumerator Hammer()
+    {
+        yield return new WaitForSeconds(0.5f);
+
+        _hammer.gameObject.SetActive(true);
+
+        yield return new WaitForSeconds(_hammerTime);
+
+        _hammer.gameObject.SetActive(false);
     }
 }
