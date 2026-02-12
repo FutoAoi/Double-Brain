@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Door : MonoBehaviour
 {
-    [SerializeField] private List<Switch> _flagGimmicks;
+    [SerializeField] private List<GameObject> _flagGimmicks;
     [SerializeField] private bool _noClose = false;
     [SerializeField] private Transform _openTransform;
 
@@ -18,7 +18,7 @@ public class Door : MonoBehaviour
         _audioManager = AudioManager.Instance;
         foreach (var gimmick in _flagGimmicks)
         {
-            gimmick.OnActiveChanged += CheckActiveGimmick;
+            gimmick.GetComponent<IGimmick>().OnActiveChanged += CheckActiveGimmick;
         }
     }
 
@@ -39,7 +39,7 @@ public class Door : MonoBehaviour
         bool flag = true;
         foreach(var gimmick in _flagGimmicks)
         {
-            flag = gimmick.IsActiveGimmick;
+            flag = gimmick.GetComponent<IGimmick>().IsActiveGimmick;
 
             if (!flag)
             {

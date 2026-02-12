@@ -282,6 +282,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1361865443609438244}
   m_SourcePrefab: {fileID: 100100000, guid: 5bc9a5bbf4609924aa00bf5db217e716, type: 3}
+--- !u!23 &1486094394337369538 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6184453619356891979, guid: 5bc9a5bbf4609924aa00bf5db217e716, type: 3}
+  m_PrefabInstance: {fileID: 4705203015157081737}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7429610043167732236 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2762813025271878789, guid: 5bc9a5bbf4609924aa00bf5db217e716, type: 3}
@@ -304,6 +309,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c24480513ce8a864b84662ab90cf9b68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Switch
+  _targetRenderer: {fileID: 1486094394337369538}
+  _pressColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!136 &1361865443609438244
 CapsuleCollider:
   m_ObjectHideFlags: 0

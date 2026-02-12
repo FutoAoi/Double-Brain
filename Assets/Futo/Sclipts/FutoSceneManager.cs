@@ -15,36 +15,36 @@ public class FutoSceneManager : MonoBehaviour
     private AudioManager _audioManager;
     private void Start()
     {
-        //_audioManager = AudioManager.Instance;
-        //_audioManager.StopBGM();
-        //switch (_thisScene)
-        //{
-        //    case SceneType.Title:
-        //        _audioManager.PlayBGM("Title");
-        //        break;
-        //    case SceneType.InGame:
-        //        break;
-        //    case SceneType.GameOver:
-        //        break;
-        //    case SceneType.GameClear:
-        //        break;
-        //}
+        _audioManager = AudioManager.Instance;
+        _audioManager.StopBGM();
+        switch (_thisScene)
+        {
+            case SceneType.Title:
+                _audioManager.PlayBGM("Title");
+                break;
+            case SceneType.InGame:
+                _audioManager.PlayBGM("InGame");
+                break;
+            case SceneType.GameOver:
+                _audioManager.PlayBGM("GameOver");
+                break;
+            case SceneType.GameClear:
+                _audioManager.PlayBGM("GameClear");
+                break;
+        }
     }
+
     public void SceneChange(int number)
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene(number);
     }
+
     public void EndGame()
     {
-        //Escが押された時
-        if (Input.GetKey(KeyCode.Escape))
-        {
-
 #if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;//ゲームプレイ終了
+        UnityEditor.EditorApplication.isPlaying = false;//ゲームプレイ終了
 #else
     Application.Quit();//ゲームプレイ終了
 #endif
-        }
-    }
+    }   
 }

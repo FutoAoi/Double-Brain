@@ -10,6 +10,8 @@ public static class SoundDataUtility
             public static readonly string Door = "Door";
             public static readonly string Swich = "Swich";
             public static readonly string KeyDoor = "KeyDoor";
+            public static readonly string Rock = "Rock";
+            public static readonly string Lever = "Lever";
         }
 
         public static class Bgm
